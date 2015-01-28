@@ -9,13 +9,15 @@ randstr(maxlen) = join(map(i->char(int('a') + rand(0:deltachars)), 1:rand(1:maxl
 
 function random_xmlelem_tree(maxdepth = 5)
   xmlelement = new_element(randstr(8))
-  p = rand()
-  if p < 0.20 && maxdepth > 0
-    add_child(xmlelement, random_xmlelem_tree(maxdepth-1))
-  elseif p < 0.60
-    set_attribute(xmlelement, randstr(5), randstr(10))
-  else
-    add_text(xmlelement, randstr(20))
+  for r in 1:rand(1:5)
+    p = rand()
+    if p < 0.50 && maxdepth > 0
+      add_child(xmlelement, random_xmlelem_tree(maxdepth-1))
+    elseif p < 0.75
+      set_attribute(xmlelement, randstr(5), randstr(10))
+    else
+      add_text(xmlelement, randstr(20))
+    end
   end
   return xmlelement
 end
