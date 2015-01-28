@@ -192,7 +192,9 @@ type XMLElement <: AbstractXMLNode
         if !is_elementnode(node)
             throw(ArgumentError("The input node is not an element."))
         end
-        new(node)
+        xelem = new(node)
+        finalizer(xelem, free)
+        xelem
     end
 
     XMLElement(ptr::Xptr) = XMLElement(XMLNode(ptr))
@@ -206,6 +208,12 @@ content(x::XMLElement) = content(x.node)
 
 Base.string(x::XMLElement) = string(x.node)
 Base.show(io::IO, x::XMLElement) = show(io, x.node)
+
+function free(xelem::XMLElement)
+    ccall(xmlUnlinkNode, Void, (Ptr{Void},), xelem.node.ptr)
+    ccall(xmlFreeNode, Void, (Ptr{Void},), xelem.node.ptr)
+    xelem.node.ptr = nullptr
+end
 
 # attribute access
 
